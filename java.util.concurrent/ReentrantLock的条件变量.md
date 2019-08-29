@@ -18,7 +18,7 @@ public class ConditionTest {
         System.out.println("主线程获取锁资源");
         try {
             System.out.println("主线程等待通知");
-            condition.await();										//主线程释放锁资源，并被阻塞
+            condition.await();							//主线程释放锁资源，并被阻塞
         } finally {
             lock.unlock();
             System.out.println("主线程释放锁资源");
@@ -310,8 +310,8 @@ private void doSignal(Node first) {
 
 ```JAVA
 /**
-*	true表示节点被成功入队
-*	false表示节点在被通知之前被中断
+*	返回true表示节点被成功入队
+*	返回false表示节点在被通知之前被中断
 */
 final boolean transferForSignal(Node node) {
    	//如果node节点的等待状态不为Node.CONDITION，则表示该节点的线程已经被取消或者在调用signal()
@@ -321,10 +321,7 @@ final boolean transferForSignal(Node node) {
 
     Node p = enq(node);//将当前节点添加到AQS的同步队列中,返回值p为当前节点在阻塞队列的前驱节点
     int ws = p.waitStatus;
-    //1、如果前驱节点的等待状态>0（状态为取消）,则直接唤醒当前线程，根据acquireQueued方法的逻辑，
-    // 唤醒该线程后发现该线程的前驱节点不是AQS同步队列的头结点，则会将前驱节点从AQS同步队列中剔除，
-    // 并中断当前线程的节点
-    //2、!compareAndSetWaitStatus(p, ws, Node.SIGNAL)
+ 
     if (ws > 0 || !compareAndSetWaitStatus(p, ws, Node.SIGNAL))
         LockSupport.unpark(node.thread);
     return true;
@@ -333,11 +330,9 @@ final boolean transferForSignal(Node node) {
 
 
 
+1、ws > 0 的情况是当前节点在AQS阻塞队列的前驱节点的状态为Node.CANCELLED,此时将会唤醒当前节点，并在acquireQueued方法中调用shouldParkAfterFailedAcquire方法将状态为Node.CANCELLED的节点从AQS的阻塞队列中剔除
 
-
-
-
-
+2、 !compareAndSetWaitStatus(p, ws, Node.SIGNAL) 为true,即当前线程准备通过CAS将前驱节点的状态改为Node.SIGNAL失败。从AQS获取锁和释放锁的代码中可以看出，AQS阻塞队列节点的前驱节点状态必须要为Node.SIGNAL。CAS修改失败可能可能的场景是在执行CAS的时候，前驱节点线程的状态变为Node.CANCELLED。	
 
 
 
