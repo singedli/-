@@ -41,7 +41,7 @@ ReentrantLock的构造函数：
 
 查看sync的lock()方法可以发现，sync类中的lock()方法为一个钩子方法，因为上面创建的是公平锁，所以此时具体的获取锁资源的实现是在FairSync类中。
 
-![images](https://github.com/singedli/juc/blob/master/pic/sycn%E7%9A%84lock()%E6%96%B9%E6%B3%95.png)
+![images](https://github.com/singedli/source-code-studey/blob/master/java.util.concurrent/pic/sycn%E7%9A%84lock()%E6%96%B9%E6%B3%95.png)
 
 
 
@@ -114,7 +114,7 @@ AQS的acquire(int arg)方法是模板方法，公平模式和非公平模式都�
 
 2. (s = h.next) == null  处理的是一种中间状态
 
-   ![image](https://github.com/singedli/juc/blob/master/pic/线程节点入队的方法.png)
+   ![image](https://github.com/singedli/source-code-studey/blob/master/java.util.concurrent/pic/%E7%BA%BF%E7%A8%8B%E8%8A%82%E7%82%B9%E5%85%A5%E9%98%9F%E7%9A%84%E6%96%B9%E6%B3%95.png)
 
 
    线程节点入队的方法如上图所示：
